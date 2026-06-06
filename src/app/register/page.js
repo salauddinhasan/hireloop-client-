@@ -12,6 +12,7 @@ const RegisterPage = () => {
     name: "",
     email: "",
     password: "",
+    role: "user",
   });
 
   const handleChange = (e) => {
@@ -28,6 +29,7 @@ const RegisterPage = () => {
         email: formData.email,
         password: formData.password,
         name: formData.name,
+        role: formData.role,
         callbackURL: "/dashboard",
       });
 
@@ -145,6 +147,26 @@ const RegisterPage = () => {
               placeholder="Create a password"
               className="w-full bg-[#131418] border border-white/[0.06] rounded-xl py-2.5 px-4 text-xs text-white placeholder-gray-600 focus:outline-none focus:border-[#4d46ff] focus:ring-1 focus:ring-[#4d46ff] transition-all"
             />
+          </div>
+
+          {/* Account Type / Role Selection */}
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-medium text-gray-400 tracking-wide">
+              Join As
+            </label>
+            <select
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              className="w-full bg-[#131418] border border-white/[0.06] rounded-xl py-2.5 px-4 text-xs text-white focus:outline-none focus:border-[#4d46ff] focus:ring-1 focus:ring-[#4d46ff] transition-all cursor-pointer"
+            >
+              <option value="user" className="bg-[#131418]">
+                Job Seeker
+              </option>
+              <option value="recruiter" className="bg-[#131418]">
+                Recruiter
+              </option>
+            </select>
           </div>
 
           {/* Submit Button */}

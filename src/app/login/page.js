@@ -35,7 +35,7 @@ const LoginPage = () => {
 
       if (data) {
         alert("Login Successful!");
-        isSuccessful = true;  
+        isSuccessful = true;
       }
     } catch (err) {
       alert("Something went wrong during login!");
