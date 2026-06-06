@@ -1,9 +1,8 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-
-import RecruiterDashboard from "@/components/RecruiterDashboard";
+import { auth, db } from "@/lib/auth";  
 import UserDashboard from "@/components/UserDashboard";
-import { auth } from "@/lib/auth";
+import RecruiterDashboard from "@/components/RecruiterDashboard";
 
 export default async function DashboardPage() {
   const session = await auth.api.getSession({
@@ -15,10 +14,24 @@ export default async function DashboardPage() {
   }
 
   const user = session.user;
-
+ 
   if (user.role === "recruiter") {
     return <RecruiterDashboard user={user} />;
   }
 
-  return <UserDashboard user={user} />;
+  
+  const jobsData = await db
+    .collection("jobs")
+    .find({ status: "active" })
+    .sort({ createdAt: -1 })  
+    .toArray();
+ 
+  const jobs = jobsData.map((job) => ({
+    ...job,
+    _id: job._id.toString(),
+    recruiterId: job.recruiterId.toString(),
+  }));
+
+ 
+  return <UserDashboard user={user} jobs={jobs} />;
 }
