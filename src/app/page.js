@@ -1,3 +1,4 @@
+import CtaBanner from "@/components/CtaBanner";
 import FeaturedJobs from "@/components/FeaturedJobs";
 import Hero from "@/components/Hero";
 import OurServices from "@/components/OurServices";
@@ -10,6 +11,7 @@ export default function Home() {
       <FeaturedJobs/>
       <OurServices/>
       <PricingSection/>
+      <CtaBanner/>
     </div>
   );
 }
