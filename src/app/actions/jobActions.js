@@ -2,9 +2,10 @@
 
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { db } from "@/lib/auth";
+import { db } from "@/lib/auth";  
 import { ObjectId } from "mongodb";
 
+ 
 export async function createJobAction(formData) {
   try {
     const session = await auth.api.getSession({
@@ -12,10 +13,7 @@ export async function createJobAction(formData) {
     });
 
     if (!session || session.user.role !== "recruiter") {
-      return {
-        success: false,
-        error: "Unauthorized! Only recruiters can post jobs.",
-      };
+      return { success: false, error: "Unauthorized! Only recruiters can post jobs." };
     }
 
     const title = formData.get("title");
@@ -48,8 +46,53 @@ export async function createJobAction(formData) {
     }
 
     return { success: false, error: "Failed to save job to database." };
+
   } catch (error) {
     console.error("Job Post Error:", error);
     return { success: false, error: "Something went wrong!" };
+  }
+}
+
+ 
+export async function applyToJobAction(jobId) {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session) {
+      return { success: false, error: "You must be logged in to apply!" };
+    }
+
+    const applicantId = session.user.id;
+
+     
+    const existingApplication = await db.collection("applications").findOne({
+      jobId: new ObjectId(jobId),
+      applicantId: new ObjectId(applicantId),
+    });
+
+    if (existingApplication) {
+      return { success: false, error: "You have already applied for this job!" };
+    }
+
+    const newApplication = {
+      jobId: new ObjectId(jobId),
+      applicantId: new ObjectId(applicantId),
+      status: "pending",
+      appliedAt: new Date(),
+    };
+
+    const result = await db.collection("applications").insertOne(newApplication);
+
+    if (result.insertedId) {
+      return { success: true, message: "Applied successfully for this job!" };
+    }
+
+    return { success: false, error: "Failed to submit application." };
+
+  } catch (error) {
+    // console.error("Apply Job Error:", error);
+    return { success: false, error: "Something went wrong during application!" };
   }
 }

@@ -1,8 +1,20 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
+import { applyToJobAction } from "@/app/actions/jobActions"; // নতুন অ্যাকশন ইমপোর্ট করলাম
 
 const UserDashboard = ({ user, jobs }) => {
+  const [applyingId, setApplyingId] = useState(null); // কোন জবে অ্যাপ্লাই হচ্ছে তার আইডি ট্র্যাক রাখার জন্য
+
+  const handleApply = async (jobId) => {
+    setApplyingId(jobId); // লোডিং স্টেট অন করলাম
+
+    const response = await applyToJobAction(jobId);
+
+    setApplyingId(null); // লোডিং স্টেট অফ করলাম
+    alert(response.message || response.error);
+  };
+
   return (
     <div className="p-8 min-h-screen bg-[#070708] text-white">
       <div className="max-w-5xl mx-auto">
@@ -61,8 +73,14 @@ const UserDashboard = ({ user, jobs }) => {
                       {job.salary}
                     </p>
                   </div>
-                  <button className="bg-[#4d46ff] hover:bg-[#3b35cc] text-white font-semibold text-xs py-2 px-4 rounded-xl transition-all">
-                    Apply Now
+
+                  {/* 🌟 বাটন ক্লিকের সাথে job._id পাস করে দিলাম */}
+                  <button
+                    onClick={() => handleApply(job._id)}
+                    disabled={applyingId === job._id}
+                    className="bg-[#4d46ff] hover:bg-[#3b35cc] text-white font-semibold text-xs py-2 px-4 rounded-xl transition-all disabled:opacity-50"
+                  >
+                    {applyingId === job._id ? "Applying..." : "Apply Now"}
                   </button>
                 </div>
               </div>
